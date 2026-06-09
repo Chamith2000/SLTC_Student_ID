@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Recently Added Students</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Display Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Display Error Message -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>Recently Added Students</h2>
+            <p class="text-muted">Review and edit student details, then move to Confirmation Pending.</p>
+        </div>
+        <div class="col-6 text-right">
+            <a th:href="@{/student/student-add}" class="btn btn-primary">Add New Student</a>
+        </div>
+    </div>
+
+    <!-- Student Table with Bulk Action -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form id="bulkConfirmForm" th:action="@{/student/submit-for-confirmation}" method="post">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title mb-0">Pending Review</h4>
+                            <button type="button" class="btn btn-success" onclick="submitSelected()">
+                                <i class="mdi mdi-check-all"></i> Move to Confirmation Pending
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" title="Select All"/></th>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Reg Number</th>
+                                    <th>Course</th>
+                                    <th>Batch</th>
+                                    <th>Date Added</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="student, iterStat : ${students}">
+                                    <td>
+                                        <input type="checkbox" name="studentIds"
+                                               th:value="${student.id}"
+                                               class="student-checkbox"/>
+                                    </td>
+                                    <td th:text="${iterStat.index + 1}"></td>
+                                    <td th:text="${student.fullName}"></td>
+                                    <td th:text="${student.regNo}"></td>
+                                    <td th:text="${student.courseName}"></td>
+                                    <td th:text="${student.batchName}"></td>
+                                    <td th:text="${#dates.format(student.createDate, 'dd MMM yyyy')}"></td>
+                                    <td>
+                                        <a th:href="@{/student/edit/{id}(id=${student.id})}"
+                                           class="btn btn-sm btn-info">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(students)}">
+                                    <td colspan="8" class="text-center">No students pending review.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const selectAllCheckbox = document.getElementById('selectAll');
+
+        selectAllCheckbox.addEventListener('change', function () {
+            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = this.checked);
+        });
+
+        document.querySelectorAll('.student-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const all = document.querySelectorAll('.student-checkbox');
+                const checked = document.querySelectorAll('.student-checkbox:checked');
+                selectAllCheckbox.checked = all.length === checked.length;
+                selectAllCheckbox.indeterminate = checked.length > 0 && checked.length < all.length;
+            });
+        });
+
+        function submitSelected() {
+            const checked = document.querySelectorAll('.student-checkbox:checked');
+            if (checked.length === 0) {
+                alert('Please select at least one student.');
+                return;
+            }
+            if (confirm('Move ' + checked.length + ' student(s) to Confirmation Pending?')) {
+                document.getElementById('bulkConfirmForm').submit();
+            }
+        }
+    </script>
+
+</section>
+</body>
+</html>

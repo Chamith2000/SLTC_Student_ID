@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/print-id-front.css}">
+    <title>Student ID Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="id-card-container">
+
+    <div th:each="studentDTO : ${students.content}">
+        <!-- FRONT SIDE -->
+        <div class="id-card">
+            <div class="header">
+                <div class="logo">
+                    <img src="/images/logo-technology-campus.png" alt="Institute Logo"/>
+                </div>
+                <div class="title">
+                    <h6>Sri Lanka Technology Campus</h6>
+                    <p>Non scholae sed vitae discimus</p>
+                </div>
+                <h2 style="font-family: 'MuseoSansBold', sans-serif; font-size: 14pt;">STUDENT</h2>
+            </div>
+
+            <div class="front-content">
+                <div class="middle-bar-common middle-bar-top">
+                    <div class="content">
+                        <div class="photo">
+                            <img th:src="${studentDTO.filePath} ?: '/images/student-id/default-avatar.jpg'"
+                                 alt="Student Photo">
+                        </div>
+                        <h2 class="studentName" th:text="${studentDTO.displayName}"
+                            style="max-width: 175px; font-family: 'UniNeue', sans-serif; font-size: 17px;">
+                            Name
+                        </h2>
+                    </div>
+                </div>
+                <div class="middle-bar-middle">
+                </div>
+                <div class="middle-bar-common middle-bar-bottom">
+                    <div style="font-size: 7px; margin: 0px 0px; padding: 14px 0px 4px 121px;">
+                        <table style="width: 100%; border-collapse: collapse; border-spacing: 0;">
+                            <tr style="padding: 0; margin: 0;">
+                                <td style="padding: 2px; margin: 0;"><p style="margin: 0; line-height: 9px; font-family: 'UniNeue', sans-serif; font-size: 6pt;">Reg.No :
+                                    <span th:text="${studentDTO.regNo}"></span></p></td>
+                                <td style="padding: 2px; margin: 0;"><p style="margin: 0; line-height: 9px; font-family: 'UniNeue', sans-serif; font-size: 6pt;">NIC.No :
+                                    <span th:text="${studentDTO.nic}"></span></p></td>
+                            </tr>
+                            <tr style="padding: 0; margin: 0;">
+                                <td style="padding: 2px; margin: 0;"><p style="margin: 0; line-height: 9px; font-family: 'UniNeue', sans-serif; font-size: 6pt;">Faculty :
+                                    <span th:text="${studentDTO.courseName}"></span></p></td>
+                                <td style="padding: 2px; margin: 0;"><p style="margin: 0; line-height: 9px; font-family: 'UniNeue', sans-serif; font-size: 6pt;">Class :
+                                    <span th:text="${studentDTO.batchName}"></span></p></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <h6 style="margin: -6px 9px; font-family: 'MuseoSans', sans-serif; font-size: 5pt;"><p>Date of Issued : <span
+                        th:text="${#dates.format(studentDTO.issuedDate, 'yyyy/MM/dd')}"></span></p></h6>
+                <h6 style="margin: -6px 0px; padding-left: 106px; font-family: 'MuseoSans', sans-serif; font-size: 5pt;"><p>Date of Expire : <span
+                        th:text="${#dates.format(studentDTO.expiryDate, 'yyyy/MM/dd')}"></span></p></h6>
+            </div>
+            <div class="footer"></div>
+        </div>
+
+        <!-- BACK SIDE -->
+        <div class="id-card back">
+            <div class="header">
+                <div class="logo">
+                    <img src="/images/logo-technology-campus.png" alt="Institute Logo"/>
+                </div>
+                <div class="date-row">
+                    <div class="">
+                        <p style="font-family: 'MuseoSans', sans-serif; font-size: 4.96pt;"><strong>Main Campus</strong></p>
+                        <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 4.96pt;">SLTC, Ingiriya Road,</p>
+                        <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 4.96pt;">Padukka.</p>
+                    </div>
+                    <div class="">
+                        <p style="font-family: 'MuseoSans', sans-serif; font-size: 4.96pt;"><strong>City Campus</strong></p>
+                        <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 4.96pt;">SLTC, TRACE Expert City,</p>
+                        <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 4.96pt;">Colombo 10.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="date-row">
+                    <div class="date-item">
+                        <p style="font-family: 'MuseoSans', sans-serif; font-size: 7pt;"><strong>Terms and Conditions:</strong></p>
+                        <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 6pt;">This ID card is a property of SLTC. On completion or termination of the degree program this
+                            ID card should be returned to the SLTC.</p>
+                    </div>
+                    <div class="signature-section">
+                        <div class="signature-item left-signature">
+                            <div class="signature-line"></div>
+                            <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 5.32pt;">Signature of Cardholder</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="qr-code">
+                    <img th:if="${studentDTO.getQrBase64()}"
+                         th:src="'data:image/png;base64,' + ${studentDTO.getQrBase64()}"
+                         alt="Student QR Code" style="width: 100px; height: 100px;">
+                </div>
+
+            </div>
+            <div class="contact-info">
+                <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 5pt;"><i class="fas fa-envelope"></i> enrolmentoffice@sltc.ac.lk </p>
+                <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 5pt;"><i class="fas fa-globe"></i> <strong>www.sltc.ac.lk</strong></p>
+                <p style="font-family: 'MuseoSansLight', sans-serif; font-size: 5pt;"><i class="fas fa-phone"></i> (+94) 117 999 000</p>
+            </div>
+            <div class="footer"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nameElements = document.getElementsByClassName('studentName');
+            for (let i = 0; i < nameElements.length; i++) {
+                const textLength = parseInt(nameElements[i].getAttribute('data-length')) || nameElements[i].innerText.length;
+                if (textLength < 15) {
+                    nameElements[i].style.fontSize = '16px';
+                }else if (textLength < 18) {
+                    nameElements[i].style.fontSize = '14px';
+                } else if (textLength < 20) {
+                    nameElements[i].style.fontSize = '13px';
+                } else if (textLength <= 25) {
+                    nameElements[i].style.fontSize = '12px';
+                } else if (textLength <= 35) {
+                    nameElements[i].style.fontSize = '11px';
+                } else {
+                    nameElements[i].style.fontSize = '9px';
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

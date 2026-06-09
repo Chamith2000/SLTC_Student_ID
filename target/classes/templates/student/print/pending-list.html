@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Student List</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Display Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Display Error Message -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>List of student to print</h2>
+            <p class="text-muted">List of student to print</p>
+        </div>
+        <div class="col-6 text-right">
+            <button class="btn btn-success" onclick="printCurrentPage()">Print All</button>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Student List</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student Name</th>
+                                <th>Reg Number</th>
+                                <th>Phone Number</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="student, iterStat : ${students.content}">
+                                <td th:text="${iterStat.index + 1 + (students.number * students.size)}"></td>
+                                <td th:text="${student.fullName}"></td>
+                                <td th:text="${student.regNo}"></td>
+                                <td th:text="${student.phoneNumber}"></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"
+                                            th:data-id="${student.id}"
+                                            onclick="printIdCard(this)">
+                                        Print ID Card
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(students.content)}">
+                                <td colspan="5" class="text-center">No students found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div th:if="${students.totalPages > 1}" class="mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                <li class="page-item" th:classappend="${students.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/print/pending-print-list(page=${students.number - 1}, size=${students.size})}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <!-- Page Numbers -->
+                                <li th:each="page : ${#numbers.sequence(0, students.totalPages - 1)}"
+                                    class="page-item" th:classappend="${page == students.number} ? 'active'">
+                                    <a class="page-link" th:href="@{/print/pending-print-list(page=${page}, size=${students.size})}" th:text="${page + 1}"></a>
+                                </li>
+                                <!-- Next Button -->
+                                <li class="page-item" th:classappend="${students.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/print/pending-print-list(page=${students.number + 1}, size=${students.size})}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!-- Page Size Selector -->
+                        <div class="text-center mt-2">
+                            <form th:action="@{/print/pending-print-list}" method="get">
+                                <label for="size">Items per page:</label>
+                                <select id="size" name="size" onchange="this.form.submit()">
+                                    <option value="5" th:selected="${students.size == 5}">5</option>
+                                    <option value="10" th:selected="${students.size == 10}">10</option>
+                                    <option value="20" th:selected="${students.size == 20}">20</option>
+                                    <option value="50" th:selected="${students.size == 50}">50</option>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden iframe for ID Card -->
+    <iframe id="printFrame" style="display:none;"></iframe>
+
+    <script>
+        function printIdCard(button) {
+            let studentId = button.getAttribute("data-id");
+            let iframe = document.getElementById("printFrame");
+            iframe.src = "/student/generate-id/" + studentId;
+            iframe.onload = function() {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            };
+        }
+
+        function printCurrentPage() {
+            const page = [[${students.number}]];
+            const size = [[${students.size}]];
+            window.open(`/student/generate-all-ids?page=${page}&size=${size}`, "_blank");
+        }
+    </script>
+</section>
+</body>
+</html>

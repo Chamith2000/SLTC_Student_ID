@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Class Management</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Display Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Display Error Message -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>Class</h2>
+            <p class="text-muted">Manage your Class and their details here.</p>
+        </div>
+        <div class="col-6 text-right">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createBatchModal">Add New Class</button>
+        </div>
+    </div>
+
+    <!-- Batch Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Class List</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Class Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="batch, iterStat : ${batches}">
+                                <td th:text="${batch.id}"></td>
+                                <td>
+                                    <a th:href="@{/pages/batch-details/{id}(id=${batch.id})}"
+                                       th:text="${batch.name}"></a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(batches)}">
+                                <td colspan="3" class="text-center">No Classes found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding a New Batch -->
+    <div class="modal fade" id="createBatchModal" tabindex="-1" role="dialog" aria-labelledby="createBatchModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createBatchModalLabel">Create a New Class</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="forms-sample" th:action="@{/batch/create}" th:object="${batchDTO}" method="post">
+                        <div class="form-group">
+                            <label for="batchName">Batch Name</label>
+                            <input type="text" class="form-control" id="batchName" name="batchDTO.name"
+                                   placeholder="Enter batch name" th:field="*{name}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success mr-2">Create Class</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Faculty Management</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Display Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Display Error Message -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>Faculty</h2>
+            <p class="text-muted">Manage your Faculty and their details here.</p>
+        </div>
+        <div class="col-6 text-right">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createCourseModal">Add New Faculty</button>
+        </div>
+    </div>
+
+    <!-- Course Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Faculty List</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Faculty Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="course, iterStat : ${courses}">
+                                <td th:text="${course.id}"></td>
+                                <td>
+                                    <a th:href="@{/pages/course-details/{id}(id=${course.id})}"
+                                       th:text="${course.name}"></a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(courses)}">
+                                <td colspan="3" class="text-center">No Faculty Found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding a New Course -->
+    <div class="modal fade" id="createCourseModal" tabindex="-1" role="dialog" aria-labelledby="createCourseModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCourseModalLabel">Create a New Faculty</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="forms-sample" th:action="@{/course/create}" th:object="${courseDTO}" method="post">
+                        <div class="form-group">
+                            <label for="courseName">Faculty Name</label>
+                            <input type="text" class="form-control" id="courseName" name="courseDTO.name"
+                                   placeholder="Enter course name" th:field="*{name}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success mr-2">Create Faculty</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

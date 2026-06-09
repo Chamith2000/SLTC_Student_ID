@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Student Search - SLTC ID Generator</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.addons.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.ico}" />
+    <!-- Custom CSS -->
+    <style>
+        .vh-100 { height: 100vh !important; }
+        .logo img { max-width: 180px; transition: transform 0.3s ease; }
+        .logo img:hover { transform: scale(1.05); }
+        .app-title { font-size: 1.75rem; font-weight: 600; color: #343a40; }
+        .app-subtitle { font-size: 1rem; color: #6c757d; margin-top: 5px; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .card-header {
+            border-radius: 10px 10px 0 0;
+            background: #03456bdb;
+        }
+        .form-control { border-radius: 5px; padding: 12px; }
+        .btn-primary { padding: 10px; font-size: 1rem; border-radius: 5px; }
+        .footer-text { font-size: 0.85rem; }
+        .header-section { margin-bottom: 2.5rem; }
+    </style>
+</head>
+<body>
+<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="col-md-6 col-lg-5">
+        <!-- Header Section -->
+        <div class="text-center">
+            <div class="logo mb-4">
+                <img th:src="@{/images/logo-technology-campus.png}" alt="SLTC Logo" class="img-fluid">
+            </div>
+            <h1 class="app-title">Student ID</h1>
+            <p class="app-subtitle">Enter your Nic to access your details</p>
+        </div>
+
+        <!-- Error Alert -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        <!-- Search Card -->
+        <div class="card">
+            <div class="card-header text-center text-white">
+                <h4 class="mb-0">Search Your Profile</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" th:action="@{/public/student/student-search-process}" th:object="${studentDTO}">
+                    <div class="form-group mb-0 d-flex align-items-end">
+                        <div class="flex-grow-1 mr-2">
+                            <label for="query" class="form-label font-weight-bold">NIC Number</label>
+                            <input type="text"
+                                   id="query"
+                                   name="query"
+                                   th:value="${searchQuery}"
+                                   class="form-control"
+                                   placeholder="Enter your NIC Number (12)"
+                                   required
+                                   autofocus>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Search Now</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <small class="text-muted footer-text">© 2025 SLTC Technology Campus</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script th:src="@{/vendors/js/vendor.bundle.base.js}"></script>
+<script th:src="@{/vendors/js/vendor.bundle.addons.js}"></script>
+<script th:src="@{/js/off-canvas.js}"></script>
+<script th:src="@{/js/misc.js}"></script>
+</body>
+</html>

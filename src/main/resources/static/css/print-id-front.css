@@ -1,0 +1,465 @@
+:root {
+  --primary-color-blue-dark: #00486e;
+  --primary-color-blue-lite: #007bb4;
+  --primary-color-yellow-lite: #e5a948;
+}
+
+@font-face {
+  font-family: 'UniNeue';
+  src: url('/fonts/UniNeue-Trial-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+}
+
+@font-face {
+  font-family: 'MuseoSans';
+  src: url('/fonts/MuseoSans_700.otf') format('truetype');
+  font-weight: 700; /* Bold */
+}
+
+@font-face {
+  font-family: 'MuseoSansLight';
+  src: url('/fonts/MuseoSans_300.otf') format('truetype');
+  font-weight: 700; /* Bold */
+}
+
+@font-face {
+  font-family: 'MuseoSansBold';
+  src: url('/fonts/MuseoSans_900.otf') format('truetype');
+  font-weight: 700; /* Bold */
+}
+
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f4;
+  font-family: "Open Sans", sans-serif;
+}
+
+.id-card-container {
+  display: block;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* ID Card Styling */
+.id-card {
+  width: 85.6mm;
+  height: 54mm;
+  /*height: 90mm;*/
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+/* Header */
+.header {
+  background-color: #fff;
+  color: var(--primary-color-blue-dark);
+  display: flex;
+  align-items: center;
+  padding: 10px 8px 5px 9px;
+}
+
+.header p {
+  font-size: 6px;
+}
+
+.header h6 {
+  font-size: 9px;
+}
+
+.title {
+  text-align: left;
+}
+
+.title h6{
+  margin: 0px 0px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px; /* Approximately 6.92pt (6.92 * 1.333 ≈ 9.22px, rounded to 9px) */
+}
+.title p{
+  margin: 0px 0px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.header h2 {
+  flex: 1;
+  text-align: right;
+  margin: 0;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+/* Content */
+.content {
+  padding: 8px;
+  display: flex;
+  position: relative;
+  flex-grow: 1;
+}
+
+.content h6 {
+  color: var(--primary-color-blue-dark);
+}
+
+.front-content {
+  align-items: center;
+  position: relative;
+  flex-grow: 1;
+  margin-top: -8px;
+}
+
+.middle-bar-common{
+  height: 55px;
+}
+
+
+.middle-bar-common h2{
+  height: 53px;
+  margin: 14px 9px 9px 2px;
+  color: var(--primary-color-blue-dark);
+}
+
+.middle-bar-top {
+  text-align: left;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px;
+  width: 100%;
+}
+
+.middle-bar-middle {
+  background-color: var(--primary-color-blue-lite);
+  padding: 3px;
+  width: 100%;
+}
+
+.middle-bar-bottom {
+  background-color: var(--primary-color-blue-dark);
+  text-align: left;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px;
+  width: 100%;
+  color: white;
+}
+
+/* Student Photo */
+.photo {
+  width: 25mm;
+  height: 25mm;
+  border: 2px solid var(--primary-color-blue-dark);
+  margin-right: 10px;
+  margin-left: 4px;
+  z-index: 100;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px white;
+  object-fit: cover;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 100;
+  border-radius: 50%;
+}
+
+/* Student Details */
+.details {
+  flex: 1;
+  font-size: 9px;
+  z-index: 100;
+  text-align: left;
+}
+
+.details h2 {
+  margin: 0 0 7px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.details p {
+  margin: 2px 0;
+  font-size: 7px;
+}
+
+.line-break {
+  margin: 12px;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--primary-color-yellow-lite);
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px;
+  width: 100%;
+}
+
+/* Watermark */
+.watermark {
+  position: absolute;
+  /*top: 20%;*/
+  left: -5%;
+  width: 122%;
+  height: 122%;
+  background-image: url('data:image/png;base64,iVBORw0KGgoATkSuQmCC'); /* Change this path */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.2;
+  z-index: 1;
+}
+
+.date-row {
+  display: flex;
+  justify-content: space-between;
+  text-align: left; /* Centers text inside each block */
+}
+
+.date-row-f {
+  display: flex;
+  justify-content: space-between;
+  text-align: left; /* Centers text inside each block */
+}
+
+.date-row-f h4{
+  margin: 1px -11px;
+  font-size: 7px;
+}
+
+.date-item {
+  width: 70%;
+}
+.date-item p {
+  margin: 0;
+}
+
+/* BACK */
+.back {
+  background-color: #f1f1f1; /* Light background for the back side */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header for back side */
+.back .header {
+  background-color: #ffffff;
+  color: var(--primary-color-blue-lite);
+  text-align: center;
+  width: 100%;
+  padding-left: 30px;
+}
+
+.back p {
+  font-size: 7px;
+}
+
+/* Content styling */
+.back .content {
+  display: flex;
+  justify-content: space-between; /* Positions items on left and right */
+  align-items: flex-start; /* Aligns items at the top */
+  margin-left: 4px;
+}
+
+.back .header .date-row {
+  display: flex;
+  justify-content: space-between;
+  text-align: left; /* Centers text inside each block */
+  gap: 24px;
+}
+
+.back .logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 75px;
+}
+
+.back .content .date-row {
+  display: flex;
+  flex-direction: column; /* Stacks the signature boxes vertically */
+  gap: 5px;
+}
+
+.back .date-row p {
+  margin: 2px 0; /* Adjust this value for desired spacing */
+}
+
+/* Signature Box */
+.signature-box {
+  width: 80px; /* Adjust width as needed */
+  height: 41px; /* Adjust height as needed */
+  border: 1px solid #000; /* Use solid border for a box effect */
+  border-radius: 5px; /* Adjust value for more or less rounding */
+  margin-bottom: 1px; /* Space between signature box and text */
+  background-color: transparent; /* Optional: Set background color */
+}
+
+.signature-line {
+  width: 180px; /* Adjust width as needed */
+  height: 41px; /* Adjust height as needed */
+  border-bottom: 1px solid #939393; /* Use solid border for a box effect */
+  margin-bottom: 1px; /* Space between signature box and text */
+  background-color: transparent; /* Optional: Set background color */
+}
+
+.signature-section {
+  display: flex; /* Flexbox for signatures */
+  width: 85%; /* Take full width */
+  justify-content: space-between; /* Space between left and right signature sections */
+}
+
+.signature-item {
+  display: flex; /* Allows aligning signature box and text */
+  flex-direction: column; /* Stacks signature box and text vertically */
+  align-items: center; /* Center align items */
+}
+
+.left-signature {
+  text-align: left; /* Align text to the left */
+}
+
+.right-signature {
+  text-align: right; /* Align text to the right */
+  margin-left: auto; /* Pushes the right signature to the right */
+}
+
+.signature {
+  width: 61px;
+  height: 100%;
+  margin-left: 6px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1;
+  background-image: url('/images/student-id/signature.png');
+}
+
+
+/* QR Code styling */
+.qr-code {
+  display: flex;
+  justify-content: center; /* Center the QR code */
+  align-items: center; /* Center align */
+  margin-left: auto; /* Push QR code to the right */
+}
+
+/* Contact info styling */
+.contact-info {
+  display: flex; /* Use flexbox to align items in a row */
+  align-items: center; /* Center align items vertically */
+  justify-content: flex-start; /* Align items to the left */
+  margin-bottom: 5px;
+  margin-left: -39px;
+}
+
+.contact-info p {
+  margin: 0 10px; /* Add horizontal margin for spacing */
+}
+
+/* Print Styles */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none;
+  }
+
+  .id-card-container {
+    display: block;
+  }
+
+  .id-card {
+    width: 85.6mm;
+    height: 54mm;
+    box-shadow: none;
+    page-break-after: always;
+    display: flex;
+  }
+
+  @page {
+    size: 85.6mm 54mm;
+    margin: 0;
+  }
+
+  .watermark {
+    opacity: 0.2;
+  }
+
+  .studentName[data-length]:not([style*="font-size"]) {
+    font-size: 16px; /* Fallback for undefined lengths */
+  }
+  /* <15 chars */
+  .studentName[data-length="1"], .studentName[data-length="2"],
+  .studentName[data-length="3"], .studentName[data-length="4"],
+  .studentName[data-length="5"], .studentName[data-length="6"],
+  .studentName[data-length="7"], .studentName[data-length="8"],
+  .studentName[data-length="9"], .studentName[data-length="10"],
+  .studentName[data-length="11"], .studentName[data-length="12"],
+  .studentName[data-length="13"], .studentName[data-length="14"] {
+    font-size: 16px;
+  }
+  /* <18 chars (15, 16, 17) */
+  .studentName[data-length="15"], .studentName[data-length="16"],
+  .studentName[data-length="17"] {
+    font-size: 14px;
+  }
+  /* <20 chars (18, 19) */
+  .studentName[data-length="18"], .studentName[data-length="19"] {
+    font-size: 13px;
+  }
+  /* <=25 chars (20, 21, 22, 23, 24, 25) */
+  .studentName[data-length="20"], .studentName[data-length="21"],
+  .studentName[data-length="22"], .studentName[data-length="23"],
+  .studentName[data-length="24"], .studentName[data-length="25"] {
+    font-size: 12px;
+  }
+  /* <=35 chars (26 to 35) */
+  .studentName[data-length="26"], .studentName[data-length="27"],
+  .studentName[data-length="28"], .studentName[data-length="29"],
+  .studentName[data-length="30"], .studentName[data-length="31"],
+  .studentName[data-length="32"], .studentName[data-length="33"],
+  .studentName[data-length="34"], .studentName[data-length="35"] {
+    font-size: 11px;
+  }
+  /* >35 chars (approximate for 36 and above) */
+  .studentName[data-length="36"], .studentName[data-length="37"],
+  .studentName[data-length="38"], .studentName[data-length="39"],
+  .studentName[data-length="40"], .studentName[data-length="41"],
+  .studentName[data-length="42"], .studentName[data-length="43"],
+  .studentName[data-length="44"], .studentName[data-length="45"] {
+    font-size: 9px;
+  }
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Student Registration</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Display Success Message -->
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Display Error Message -->
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>Student Registration</h2>
+            <p class="text-muted">Register a new student in the system.</p>
+        </div>
+        <div class="col-6 text-right">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createBatchModal">Bulk Registration</button>
+            <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+
+    <!-- Student Registration Form -->
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Register a New Student</h4>
+            <form th:action="@{/student/student-register}" th:object="${studentDTO}" method="post" enctype="multipart/form-data">
+
+                <!-- Image Upload and Preview -->
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Profile Image</label>
+                    <div class="col-sm-10">
+                        <!-- Default Profile Image -->
+                        <div class="upload-photo" style="margin-top: 10px;">
+                            <img id="imagePreview" src="/images/student-id/default-avatar.jpg" alt="Profile Image" class="img-thumbnail mb-2">
+                        </div>
+
+                        <!-- Buttons in a row -->
+                        <div class="d-flex gap-2">
+                            <!-- Browse Button -->
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+
+                            <!-- Take Photo Button -->
+                            <button type="button" class="btn btn-primary" onclick="openCamera()">Take a Photo</button>
+                        </div>
+                    </div>
+                </div>  
+
+                <!-- First Name -->
+                <div class="form-group row">
+                    <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="firstName" name="firstName" th:field="*{firstName}" placeholder="Enter first name" required>
+                    </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group row">
+                    <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="lastName" name="lastName" th:field="*{lastName}" placeholder="Enter last name" required>
+                    </div>
+                </div>
+
+                <!-- Display Name -->
+                <div class="form-group row">
+                    <label for="displayName" class="col-sm-2 col-form-label">Display Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="displayName" name="displayName" th:field="*{displayName}" placeholder="Enter display name" required>
+                    </div>
+                </div>
+
+                <!-- Registration Number -->
+                <div class="form-group row">
+                    <label for="regNo" class="col-sm-2 col-form-label">Reg No</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="regNo" name="regNo" th:field="*{regNo}" placeholder="Enter registration number" required>
+                    </div>
+                </div>
+
+                <!-- NIC -->
+                <div class="form-group row">
+                    <label for="nic" class="col-sm-2 col-form-label">NIC</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nic" name="nic" th:field="*{nic}" placeholder="Enter NIC" required>
+                    </div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group row">
+                    <label for="phoneNumber" class="col-sm-2 col-form-label">Phone Number</label>
+                    <div class="col-sm-10">
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter phone number" required>
+                    </div>
+                </div>
+
+                <!-- Course Dropdown -->
+                <div class="form-group row">
+                    <label for="courseId" class="col-sm-2 col-form-label">Faculty</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="courseId" name="courseId" th:field="*{courseId}" required>
+                            <option value="" disabled selected>Select a course</option>
+                            <option th:each="course : ${courses}"
+                                    th:value="${course.id}"
+                                    th:text="${course.name}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Batch Dropdown -->
+                <div class="form-group row">
+                    <label for="batchId" class="col-sm-2 col-form-label">Class</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="batchId" name="batchId" th:field="*{batchId}" required>
+                            <option value="" disabled selected>Select a batch</option>
+                            <option th:each="batch : ${batches}"
+                                    th:value="${batch.id}"
+                                    th:text="${batch.name}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="form-group row mt-4">
+                    <div class="col-sm-12 text-right">
+                        <button type="submit" class="btn btn-success">Register Student</button>
+                        <a href="javascript:history.back()" class="btn btn-light">Cancel</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding a New Batch -->
+    <div class="modal fade" id="createBatchModal" tabindex="-1" role="dialog" aria-labelledby="createBatchModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/student/upload-student-excel}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="file">Upload Student Excel</label>
+                            <input type="file" class="form-control-file" id="file" name="file" accept=".xlsx,.xls" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload & Register</button>
+                        <a href="/sample/student_format.xlsx" class="btn btn-secondary" download> Excel Format (sample) </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Capture Modal -->
+    <div class="modal fade" id="cameraModal" tabindex="-1" role="dialog" aria-labelledby="cameraModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Take a Photo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <video id="camera" autoplay style="width: 100%; max-height: 300px;"></video>
+                    <canvas id="canvas" style="display:none;"></canvas>
+                    <button type="button" class="btn btn-success mt-2" onclick="capturePhoto()">Capture</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+
+    <script>
+        let videoStream;
+
+        function openCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoStream = stream;
+                    document.getElementById('camera').srcObject = stream;
+                    $('#cameraModal').modal('show');
+                })
+                .catch(error => {
+                    alert("Camera access denied or not available.");
+                    console.error(error);
+                });
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to data URL (Base64)
+            const imageDataURL = canvas.toDataURL('image/png');
+
+            // Display the captured image
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = imageDataURL;
+            imagePreview.style.display = 'block';
+
+            // Convert the image to a file and set it in the file input
+            dataURLtoFile(imageDataURL, "captured_photo.png");
+
+            // Stop the camera and close the modal
+            videoStream.getTracks().forEach(track => track.stop());
+            $('#cameraModal').modal('hide');
+        }
+
+        function dataURLtoFile(dataURL, filename) {
+            let arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+
+            let file = new File([u8arr], filename, { type: mime });
+
+            // Create a DataTransfer object to simulate file upload
+            let fileInput = document.getElementById('image');
+            let dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+        }
+    </script>
+
+</section>
+</body>
+</html>

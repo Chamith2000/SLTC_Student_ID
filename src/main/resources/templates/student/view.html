@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Please Check Your Details</title>
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.ico}" />
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-info" role="alert" style="margin-top: -47px; margin-bottom: 30px;">
+                <h4 class="alert-heading mb-0">Take a moment to check your information—please confirm if everything’s correct or suggest any changes</h4>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <!-- Student Details Display -->
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Profile Image</label>
+                <div class="col-sm-5">
+                    <div class="upload-photo large" style="margin-top: 10px;">
+                        <img th:src="${student.filePath} ?: '/images/student-id/default-avatar.jpg'"
+                             id="imagePreview" src="/images/student-id/default-avatar.jpg" alt="Profile Image" class="img-thumbnail mb-2">
+                    </div>
+                </div>
+                <div class="col-sm-5 text-md-left">
+                    <span>Your ID is being printed and used based on how this picture appears</span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="firstName" class="col-sm-2 col-form-label">First Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="firstName" th:value="${student.firstName}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="lastName" class="col-sm-2 col-form-label">Last Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="lastName" th:value="${student.lastName}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="displayName" class="col-sm-2 col-form-label">Display Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="displayName" th:value="${student.displayName}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="regNo" class="col-sm-2 col-form-label">Reg No</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="regNo" th:value="${student.regNo}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="nic" class="col-sm-2 col-form-label">NIC</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nic" th:value="${student.nic}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="phoneNumber" class="col-sm-2 col-form-label">Phone Number</label>
+                <div class="col-sm-10">
+                    <input type="tel" class="form-control" id="phoneNumber" th:value="${student.phoneNumber}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="courseName" class="col-sm-2 col-form-label">Course</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="courseName" th:value="${student.courseName}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="batchName" class="col-sm-2 col-form-label">Batch</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="batchName" th:value="${student.batchName}" disabled>
+                </div>
+            </div>
+            <hr>
+            <!-- Confirmation Status -->
+            <div class="form-group row">
+                <label for="confirmed" class="col-sm-2 col-form-label">Confirmation Status</label>
+                <div class="col-sm-10" style="margin-top: 5px;">
+                    <span id="confirmed"
+                          style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
+                          th:text="${student.confirmationStatus == T(com.oexil.studentreg.enums.ConfirmationStatus).UNCONFIRMED ? 'Not yet confirmed' : (student.confirmed ? 'Confirmed (' + #dates.format(student.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')' : 'Confirmation Rejected (' + #dates.format(student.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')')}"></span>
+                </div>
+            </div>
+
+            <!-- Corrections (Visible only if confirmed is false) -->
+            <div class="form-group row" th:if="${student.confirmed == false}">
+                <label for="correction" class="col-sm-2 col-form-label">Corrections</label>
+                <div class="col-sm-10" style="margin-top: 5px;">
+                    <span id="correction"
+                          style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
+                          th:text="${student.corrections ?: 'No corrections submitted'}" disabled></span>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group row" style=" margin-top: -24px;">
+                <label for="batchName" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <!-- Confirmation Section -->
+                    <div class="form-group row mt-4">
+                        <div class="col-sm-12">
+                            <form th:action="@{/public/student/confirm}" method="post">
+                                <input type="hidden" name="studentId" th:value="${student.id}">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="confirmCheck" name="confirmed" value="true">
+                                    <label class="form-check-label" for="confirmCheck">I confirm that all details are correct</label>
+                                </div>
+                                <button type="submit" class="btn btn-success mt-2">Submit Confirmation</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Not Confirmed Section -->
+                    <div class="form-group row mt-4">
+                        <div class="col-sm-12">
+                            <form th:action="@{/public/student/report-error}" method="post">
+                                <input type="hidden" name="studentId" th:value="${student.id}">
+                                <div class="form-group">
+                                    <label for="corrections">If there are any changes needed, please specify them below:</label>
+                                    <textarea class="form-control" id="corrections" name="corrections" rows="3" placeholder="Enter corrections here"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-warning mt-2">Submit Corrections</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
