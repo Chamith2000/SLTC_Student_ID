@@ -23,8 +23,7 @@ public class RootController {
 
         // Redirect based on role
         if (isAdmin) {
-//            return "redirect:/dashboard/admin";
-            return "redirect:/student/student-list";
+            return "redirect:/dashboard/admin";
         }
 
         // Default fallback for unknown roles

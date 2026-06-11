@@ -16,10 +16,11 @@ public class ImageUploadService {
     @Value("${server.file.prefix}")
     private String filePrefix;
 
-    public String[] getResultsOfFileWrite(MultipartFile imageFile) {
+    public String[] getResultsOfFileWrite(MultipartFile imageFile, String regNo) {
         String urlPrefix = filePrefix + "/";
-        String fileName = new FileUtilizer().generateFileName(imageFile.getOriginalFilename());
 
+        String fileName = regNo + ".jpg";
+        
         if (!new FileUtilizer().writeToDisk(imageFile, Paths.get(archivePath), fileName)) {
             return null;
         } else {

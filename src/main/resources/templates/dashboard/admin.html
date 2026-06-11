@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-1">Dashboard</h2>
+            <p class="text-muted mb-0">Student Registration System — Overview</p>
+        </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row mb-4">
+
+        <!-- Total Students -->
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted text-uppercase font-weight-bold small mb-1">Total Students</div>
+                            <div class="h3 mb-0 font-weight-bold" th:text="${totalStudents}">0</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="mdi mdi-account-multiple mdi-36px text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <a th:href="@{/student/student-list}" class="small text-primary">View all students &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmed -->
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-success h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted text-uppercase font-weight-bold small mb-1">Confirmed</div>
+                            <div class="h3 mb-0 font-weight-bold" th:text="${confirmationCounts['CONFIRMED']}">0</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="mdi mdi-check-circle mdi-36px text-success"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <span class="small text-muted">Details verified &amp; approved</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Confirmation -->
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted text-uppercase font-weight-bold small mb-1">Pending Confirmation</div>
+                            <div class="h3 mb-0 font-weight-bold" th:text="${confirmationCounts['PENDING']}">0</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="mdi mdi-clock-outline mdi-36px text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <a th:href="@{/confirmation/pending-list}" class="small text-warning">View pending list &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards Issued -->
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-info h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="text-muted text-uppercase font-weight-bold small mb-1">Cards Issued</div>
+                            <div class="h3 mb-0 font-weight-bold" th:text="${cardStatusCounts['ISSUED']}">0</div>
+                        </div>
+                        <div class="ml-3">
+                            <i class="mdi mdi-card-account-details mdi-36px text-info"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <a th:href="@{/print/printed-list}" class="small text-info">View printed list &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+
+        <!-- Confirmation Status Chart -->
+        <div class="col-xl-5 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">Confirmation Status</h5>
+                    <p class="text-muted small mb-3">Breakdown of student confirmation states</p>
+                    <div style="position: relative; height: 240px;">
+                        <canvas id="confirmationChart"></canvas>
+                    </div>
+                    <!-- Legend -->
+                    <div class="d-flex flex-wrap justify-content-center mt-3" style="gap: 12px;">
+                        <span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#f6c23e;margin-right:4px;"></span><small>Pending</small></span>
+                        <span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#1cc88a;margin-right:4px;"></span><small>Confirmed</small></span>
+                        <span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#e74a3b;margin-right:4px;"></span><small>Unconfirmed</small></span>
+                        <span><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#858796;margin-right:4px;"></span><small>Recheck</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Status Chart -->
+        <div class="col-xl-7 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">ID Card Status</h5>
+                    <p class="text-muted small mb-3">Current state of all active student ID cards</p>
+                    <div style="position: relative; height: 240px;">
+                        <canvas id="cardStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Students by Course + Recent Students -->
+    <div class="row mb-4">
+
+        <!-- Students by Course -->
+        <div class="col-xl-5 col-lg-5 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1">Students by Faculty</h5>
+                    <p class="text-muted small mb-3">Number of students enrolled per faculty</p>
+                    <div th:if="${#lists.isEmpty(courseNames)}" class="text-center text-muted py-5">
+                        <i class="mdi mdi-chart-bar mdi-48px d-block mb-2"></i>
+                        No course data available
+                    </div>
+                    <div th:unless="${#lists.isEmpty(courseNames)}" style="position: relative; height: 240px;">
+                        <canvas id="courseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recently Added Students -->
+        <div class="col-xl-7 col-lg-7 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">Recently Registered Students</h5>
+                        <a th:href="@{/student/student-list}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Reg No</th>
+                                <th>Course</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="student, i : ${recentStudents}">
+                                <td th:text="${i.index + 1}" class="text-muted"></td>
+                                <td>
+                                    <a th:href="@{/student/view/{id}(id=${student.id})}"
+                                       th:text="${student.fullName}"
+                                       class="text-dark font-weight-bold"></a>
+                                </td>
+                                <td th:text="${student.regNo}" class="text-muted"></td>
+                                <td th:text="${student.course != null ? student.course.name : '-'}" class="text-muted"></td>
+                                <td th:text="${student.createDate != null ? #dates.format(student.createDate, 'dd MMM yy') : '-'}" class="text-muted"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentStudents)}">
+                                <td colspan="5" class="text-center text-muted py-3">No students registered yet.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-3">
+                    <h6 class="card-title mb-3">Quick Actions</h6>
+                    <div class="d-flex flex-wrap" style="gap: 10px;">
+                        <a th:href="@{/student/student-add}" class="btn btn-primary">
+                            <i class="mdi mdi-account-plus mr-1"></i> Register Student
+                        </a>
+                        <a th:href="@{/student/recently-added}" class="btn btn-outline-secondary">
+                            <i class="mdi mdi-account-check mr-1"></i> Recently Added
+                        </a>
+                        <a th:href="@{/confirmation/pending-list}" class="btn btn-outline-warning">
+                            <i class="mdi mdi-playlist-check mr-1"></i> Confirmation Pending
+                        </a>
+                        <a th:href="@{/print/pending-print-list}" class="btn btn-outline-info">
+                            <i class="mdi mdi-printer mr-1"></i> Print Pending
+                        </a>
+                        <a th:href="@{/course/course-list}" class="btn btn-outline-dark">
+                            <i class="mdi mdi-book-multiple mr-1"></i> Manage Faculty
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Scripts -->
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.addEventListener('load', function () {
+        'use strict';
+
+        var confirmationPending    = /*[[${confirmationCounts['PENDING']}]]*/ 0;
+        var confirmationConfirmed  = /*[[${confirmationCounts['CONFIRMED']}]]*/ 0;
+        var confirmationUnconfirmed= /*[[${confirmationCounts['UNCONFIRMED']}]]*/ 0;
+        var confirmationRecheck    = /*[[${confirmationCounts['RECHECK']}]]*/ 0;
+
+        var cardPrintPending  = /*[[${cardStatusCounts['PRINT_PENDING']}]]*/ 0;
+        var cardPdfGenerated  = /*[[${cardStatusCounts['PDF_GENERATED']}]]*/ 0;
+        var cardPrinted       = /*[[${cardStatusCounts['PRINTED']}]]*/ 0;
+        var cardIssued        = /*[[${cardStatusCounts['ISSUED']}]]*/ 0;
+
+        var courseLabels = /*[[${courseNames}]]*/ [];
+        var courseData   = /*[[${courseCounts}]]*/ [];
+
+        // ---- Confirmation Status Doughnut ----
+        var confirmCtx = document.getElementById('confirmationChart');
+        if (confirmCtx) {
+            new Chart(confirmCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'Confirmed', 'Unconfirmed', 'Recheck'],
+                    datasets: [{
+                        data: [confirmationPending, confirmationConfirmed, confirmationUnconfirmed, confirmationRecheck],
+                        backgroundColor: ['#f6c23e', '#1cc88a', '#e74a3b', '#858796'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: { display: false },
+                    cutoutPercentage: 65,
+                    tooltips: {
+                        callbacks: {
+                            label: function(item, data) {
+                                var label = data.labels[item.index];
+                                var value = data.datasets[0].data[item.index];
+                                return ' ' + label + ': ' + value;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ---- Card Status Bar ----
+        var cardCtx = document.getElementById('cardStatusChart');
+        if (cardCtx) {
+            new Chart(cardCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Print Pending', 'Printed', 'Issued'],
+                    datasets: [{
+                        label: 'ID Cards',
+                        data: [cardPrintPending, cardPrinted, cardIssued],
+                        backgroundColor: [
+                            'rgba(246, 194, 62, 0.85)',
+                            'rgba(75, 192, 192, 0.85)',
+                            'rgba(28, 200, 138, 0.85)'
+                        ],
+                        borderColor: [
+                            '#f6c23e',
+                            '#4bc0c0',
+                            '#1cc88a'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: { display: false },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0
+                            },
+                            gridLines: { color: 'rgba(0,0,0,0.05)' }
+                        }],
+                        xAxes: [{
+                            gridLines: { display: false }
+                        }]
+                    }
+                }
+            });
+        }
+
+        // ---- Students by Course Horizontal Bar ----
+        var courseCtx = document.getElementById('courseChart');
+        if (courseCtx && courseLabels.length > 0) {
+            var courseColors = [
+                'rgba(78,115,223,0.85)',
+                'rgba(28,200,138,0.85)',
+                'rgba(246,194,62,0.85)',
+                'rgba(231,74,59,0.85)',
+                'rgba(133,135,150,0.85)',
+                'rgba(54,162,235,0.85)',
+                'rgba(255,159,64,0.85)',
+                'rgba(153,102,255,0.85)'
+            ];
+            new Chart(courseCtx.getContext('2d'), {
+                type: 'horizontalBar',
+                data: {
+                    labels: courseLabels,
+                    datasets: [{
+                        label: 'Students',
+                        data: courseData,
+                        backgroundColor: courseLabels.map(function(_, i) {
+                            return courseColors[i % courseColors.length];
+                        }),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+                            ticks: { beginAtZero: true, precision: 0 },
+                            gridLines: { color: 'rgba(0,0,0,0.05)' }
+                        }],
+                        yAxes: [{
+                            gridLines: { display: false }
+                        }]
+                    }
+                }
+            });
+        }
+    });
+    /*]]>*/
+    </script>
+
+    <style>
+        .border-left-primary  { border-left: 4px solid #4e73df !important; }
+        .border-left-success  { border-left: 4px solid #1cc88a !important; }
+        .border-left-warning  { border-left: 4px solid #f6c23e !important; }
+        .border-left-info     { border-left: 4px solid #36b9cc !important; }
+        .card { box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    </style>
+
+</section>
+</body>
+</html>

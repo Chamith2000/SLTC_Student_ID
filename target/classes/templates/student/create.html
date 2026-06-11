@@ -3,6 +3,46 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>Student Registration</title>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"/>
+    <style>
+        /* Crop modal styles */
+        #cropperContainer {
+            max-height: 420px;
+            overflow: hidden;
+            background: #1a1a1a;
+            border-radius: 6px;
+        }
+        #cropperContainer img {
+            max-width: 100%;
+            display: block;
+        }
+        .cropper-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .cropper-controls .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        #cropRatioGroup .btn {
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+        .aspect-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-right: 4px;
+        }
+    </style>
 </head>
 <body>
 <section layout:fragment="content">
@@ -47,13 +87,13 @@
                         <!-- Buttons in a row -->
                         <div class="d-flex gap-2">
                             <!-- Browse Button -->
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="openCropModal(event)">
 
                             <!-- Take Photo Button -->
                             <button type="button" class="btn btn-primary" onclick="openCamera()">Take a Photo</button>
                         </div>
                     </div>
-                </div>  
+                </div>
 
                 <!-- First Name -->
                 <div class="form-group row">
@@ -103,6 +143,21 @@
                     </div>
                 </div>
 
+                <!-- issuedDate, expiryDate -->
+                <div class="form-group row">
+                    <label for="issuedDate" class="col-sm-2 col-form-label">Issued Date</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" id="issuedDate" name="issuedDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="expiryDate" class="col-sm-2 col-form-label">Expiry Date</label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+                    </div>
+                </div>
+
                 <!-- Course Dropdown -->
                 <div class="form-group row">
                     <label for="courseId" class="col-sm-2 col-form-label">Faculty</label>
@@ -141,6 +196,58 @@
         </div>
     </div>
 
+    <!-- ===== IMAGE CROP MODAL ===== -->
+    <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true"
+         data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel">Crop Profile Image</h5>
+                    <button type="button" class="close" onclick="cancelCrop()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Cropper target -->
+                    <div id="cropperContainer">
+                        <img id="cropperImage" src="" alt="Crop preview">
+                    </div>
+
+                    <!-- Controls row -->
+                    <div class="cropper-controls mt-3">
+                        <!-- Aspect ratio -->
+                        <span class="aspect-label">Ratio:</span>
+                        <div id="cropRatioGroup" class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" onclick="setAspectRatio(1, this)" title="1:1 Square">1:1</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="setAspectRatio(3/4, this)" title="3:4 Portrait">3:4</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="setAspectRatio(NaN, this)" title="Free">Free</button>
+                        </div>
+
+                        <div class="ml-auto d-flex gap-2">
+                            <!-- Rotate -->
+                            <button type="button" class="btn btn-outline-secondary btn-icon btn-sm" onclick="cropperInstance.rotate(-90)" title="Rotate Left">
+                                &#8634;
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-icon btn-sm" onclick="cropperInstance.rotate(90)" title="Rotate Right">
+                                &#8635;
+                            </button>
+                            <!-- Flip -->
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="flipHorizontal()" title="Flip Horizontal">
+                                &#8596;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cancelCrop()">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="applyCrop()">
+                        &#10003; Apply Crop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal for Adding a New Batch -->
     <div class="modal fade" id="createBatchModal" tabindex="-1" role="dialog" aria-labelledby="createBatchModalLabel"
          aria-hidden="true">
@@ -154,7 +261,15 @@
                             <label for="file">Upload Student Excel</label>
                             <input type="file" class="form-control-file" id="file" name="file" accept=".xlsx,.xls" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Upload & Register</button>
+                        <div class="form-group">
+                            <label for="bulkIssuedDate">Default Issued Date</label>
+                            <input type="date" class="form-control" id="bulkIssuedDate" name="issuedDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bulkExpiryDate">Default Expiry Date</label>
+                            <input type="date" class="form-control" id="bulkExpiryDate" name="expiryDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload &amp; Register</button>
                         <a href="/sample/student_format.xlsx" class="btn btn-secondary" download> Excel Format (sample) </a>
                     </form>
                 </div>
@@ -181,24 +296,134 @@
         </div>
     </div>
 
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
     <script>
-        function previewImage(event) {
+        // ─── Crop modal state ──────────────────────────────────────────────────────
+        let cropperInstance = null;
+        let flipScaleX = 1; // track horizontal flip state
+
+        /**
+         * Called when the user picks a file via the browse input.
+         * Loads the image into Cropper.js and opens the crop modal.
+         */
+        function openCropModal(event) {
             const file = event.target.files[0];
+            if (!file) return;
+
             const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const imagePreview = document.getElementById('imagePreview');
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-            }
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+            reader.onload = function (e) {
+                loadImageIntoCropper(e.target.result);
+            };
+            reader.readAsDataURL(file);
         }
-    </script>
 
-    <script>
+        /**
+         * Loads a base64 data URL into the Cropper modal.
+         * Used by both file-browse and camera capture paths.
+         */
+        function loadImageIntoCropper(dataURL) {
+            const cropImg = document.getElementById('cropperImage');
+
+            // Destroy previous instance if any
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+
+            // Reset flip state
+            flipScaleX = 1;
+
+            // Reset active ratio button to 1:1
+            document.querySelectorAll('#cropRatioGroup .btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#cropRatioGroup .btn').classList.add('active');
+
+            cropImg.src = dataURL;
+
+            // Show modal, then init Cropper (modal must be visible first)
+            $('#cropModal').modal('show');
+
+            $('#cropModal').one('shown.bs.modal', function () {
+                cropperInstance = new Cropper(cropImg, {
+                    aspectRatio: 1,          // default 1:1 — square profile photo
+                    viewMode: 1,             // restrict crop box within canvas
+                    autoCropArea: 0.8,
+                    movable: true,
+                    zoomable: true,
+                    rotatable: true,
+                    scalable: true,
+                    responsive: true,
+                    background: true,
+                });
+            });
+        }
+
+        /** Change aspect ratio from the button group */
+        function setAspectRatio(ratio, btn) {
+            if (cropperInstance) cropperInstance.setAspectRatio(ratio);
+            document.querySelectorAll('#cropRatioGroup .btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        /** Flip image horizontally (toggle) */
+        function flipHorizontal() {
+            if (!cropperInstance) return;
+            flipScaleX = flipScaleX === 1 ? -1 : 1;
+            cropperInstance.scaleX(flipScaleX);
+        }
+
+        /**
+         * Apply the crop: get canvas → convert to Blob → inject into file input
+         * → update preview → close modal.
+         */
+        function applyCrop() {
+            if (!cropperInstance) return;
+
+            const canvas = cropperInstance.getCroppedCanvas({
+                width: 400,
+                height: 400,
+                imageSmoothingQuality: 'high',
+            });
+
+            // Update the visible preview immediately
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = canvas.toDataURL('image/jpeg', 0.92);
+            imagePreview.style.display = 'block';
+
+            // Convert canvas → Blob → File → inject into the file input
+            canvas.toBlob(function (blob) {
+                const croppedFile = new File([blob], 'profile_cropped.jpg', { type: 'image/jpeg' });
+
+                const fileInput = document.getElementById('image');
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                fileInput.files = dataTransfer.files;
+
+                // Clean up cropper and close modal
+                cropperInstance.destroy();
+                cropperInstance = null;
+                $('#cropModal').modal('hide');
+            }, 'image/jpeg', 0.92);
+        }
+
+        /**
+         * Cancel crop: reset the file input so no stale selection remains,
+         * destroy the cropper instance, close the modal.
+         */
+        function cancelCrop() {
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+            // Clear the file input so the user can re-select if they want
+            const fileInput = document.getElementById('image');
+            fileInput.value = '';
+
+            $('#cropModal').modal('hide');
+        }
+
+        // ─── Camera ───────────────────────────────────────────────────────────────
         let videoStream;
 
         function openCamera() {
@@ -223,37 +448,16 @@
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Convert canvas to data URL (Base64)
             const imageDataURL = canvas.toDataURL('image/png');
 
-            // Display the captured image
-            const imagePreview = document.getElementById('imagePreview');
-            imagePreview.src = imageDataURL;
-            imagePreview.style.display = 'block';
-
-            // Convert the image to a file and set it in the file input
-            dataURLtoFile(imageDataURL, "captured_photo.png");
-
-            // Stop the camera and close the modal
+            // Stop camera and close camera modal first
             videoStream.getTracks().forEach(track => track.stop());
             $('#cameraModal').modal('hide');
-        }
 
-        function dataURLtoFile(dataURL, filename) {
-            let arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-
-            let file = new File([u8arr], filename, { type: mime });
-
-            // Create a DataTransfer object to simulate file upload
-            let fileInput = document.getElementById('image');
-            let dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
+            // Open crop modal with the captured photo
+            $('#cameraModal').one('hidden.bs.modal', function () {
+                loadImageIntoCropper(imageDataURL);
+            });
         }
     </script>
 

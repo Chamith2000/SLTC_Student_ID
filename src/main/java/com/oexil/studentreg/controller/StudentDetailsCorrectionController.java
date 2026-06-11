@@ -1,6 +1,7 @@
 package com.oexil.studentreg.controller;
 
 import com.oexil.studentreg.dto.student.StudentDTO;
+import com.oexil.studentreg.enums.ConfirmationStatus;
 import com.oexil.studentreg.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -40,9 +41,12 @@ public class StudentDetailsCorrectionController {
                 redirectAttributes.addFlashAttribute("error", "No student found with ID: " + query);
                 return "redirect:/public/student/student-search-view";
             }
-            // Add student to model instead of redirecting with ID
+            if (isNotYetAvailable(student)) {
+                redirectAttributes.addFlashAttribute("error", "Still Not Available");
+                return "redirect:/public/student/student-search-view";
+            }
             model.addAttribute("student", student);
-            return "student/view"; // Directly return the view template
+            return "student/view";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error occurred while searching: " + e.getMessage());
             return "redirect:/public/student/student-search-view";
@@ -60,12 +64,25 @@ public class StudentDetailsCorrectionController {
                 redirectAttributes.addFlashAttribute("error", "Student not found");
                 return "redirect:/public/student/student-search-view";
             }
+            if (isNotYetAvailable(student)) {
+                redirectAttributes.addFlashAttribute("error", "Still Not Available");
+                return "redirect:/public/student/student-search-view";
+            }
             model.addAttribute("student", student);
             return "student/view";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error retrieving student details: " + e.getMessage());
             return "redirect:/public/student/student-search-view";
         }
+    }
+
+    /**
+     * A student is not yet available for public search when they are still on the
+     * "Recently Added" list — i.e. PENDING status and not yet submitted for confirmation.
+     */
+    private boolean isNotYetAvailable(StudentDTO student) {
+        return student.getConfirmationStatus() == ConfirmationStatus.PENDING
+                && student.getConfirmationStatusChangeTime() == null;
     }
 
     // Confirm details

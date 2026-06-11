@@ -3,6 +3,45 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>Edit Student</title>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"/>
+    <style>
+        #cropperContainer {
+            max-height: 420px;
+            overflow: hidden;
+            background: #1a1a1a;
+            border-radius: 6px;
+        }
+        #cropperContainer img {
+            max-width: 100%;
+            display: block;
+        }
+        .cropper-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .cropper-controls .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        #cropRatioGroup .btn {
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+        .aspect-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-right: 4px;
+        }
+    </style>
 </head>
 <body>
 <section layout:fragment="content">
@@ -41,18 +80,13 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Profile Image</label>
                     <div class="col-sm-10">
-                        <!-- Default Profile Image -->
                         <div class="upload-photo" style="margin-top: 10px;">
                             <img th:src="${studentDTO.filePath} ?: '/images/student-id/default-avatar.jpg'"
                                  id="imagePreview" src="/images/student-id/default-avatar.jpg" alt="Profile Image" class="img-thumbnail mb-2">
                         </div>
 
-                        <!-- Buttons in a row -->
                         <div class="d-flex gap-2">
-                            <!-- Browse Button -->
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-
-                            <!-- Take Photo Button -->
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="openCropModal(event)">
                             <button type="button" class="btn btn-primary" onclick="openCamera()">Take a Photo</button>
                         </div>
                     </div>
@@ -136,7 +170,7 @@
                 <div class="form-group row">
                     <label for="issuedDate" class="col-sm-2 col-form-label">Issued Date</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="issuedDate" name="issuedDate" 
+                        <input type="date" class="form-control" id="issuedDate" name="issuedDate"
                                th:value="${studentDTO.issuedDate != null ? #dates.format(studentDTO.issuedDate, 'yyyy-MM-dd') : ''}" required>
                     </div>
                 </div>
@@ -145,7 +179,7 @@
                 <div class="form-group row">
                     <label for="expiryDate" class="col-sm-2 col-form-label">Expiry Date</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="expiryDate" name="expiryDate" 
+                        <input type="date" class="form-control" id="expiryDate" name="expiryDate"
                                th:value="${studentDTO.expiryDate != null ? #dates.format(studentDTO.expiryDate, 'yyyy-MM-dd') : ''}" required>
                     </div>
                 </div>
@@ -154,9 +188,9 @@
                 <div class="form-group row">
                     <label for="confirmed" class="col-sm-2 col-form-label">Confirmation Status</label>
                     <div class="col-sm-10" style="margin-top: 5px;">
-                    <span id="confirmed"
-                          style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
-                          th:text="${studentDTO.confirmationStatus == T(com.oexil.studentreg.enums.ConfirmationStatus).UNCONFIRMED ? 'Not yet confirmed' : (studentDTO.confirmed == true ? 'Confirmed (' + #dates.format(studentDTO.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')' : 'Confirmation Rejected (' + #dates.format(studentDTO.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')')}"></span>
+                        <span id="confirmed"
+                              style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
+                              th:text="${studentDTO.confirmationStatus == T(com.oexil.studentreg.enums.ConfirmationStatus).UNCONFIRMED ? 'Not yet confirmed' : (studentDTO.confirmed == true ? 'Confirmed (' + #dates.format(studentDTO.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')' : 'Confirmation Rejected (' + #dates.format(studentDTO.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')')}"></span>
                     </div>
                 </div>
 
@@ -164,9 +198,9 @@
                 <div class="form-group row" th:if="${studentDTO.confirmed == false}">
                     <label for="correction" class="col-sm-2 col-form-label">Corrections</label>
                     <div class="col-sm-10" style="margin-top: 5px;">
-                    <span id="correction"
-                          style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
-                          th:text="${studentDTO.corrections ?: 'No corrections submitted'}" disabled></span>
+                        <span id="correction"
+                              style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
+                              th:text="${studentDTO.corrections ?: 'No corrections submitted'}" disabled></span>
                     </div>
                 </div>
 
@@ -179,6 +213,45 @@
                 </div>
 
             </form>
+        </div>
+    </div>
+
+    <!-- ===== IMAGE CROP MODAL ===== -->
+    <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true"
+         data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel">Crop Profile Image</h5>
+                    <button type="button" class="close" onclick="cancelCrop()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="cropperContainer">
+                        <img id="cropperImage" src="" alt="Crop preview">
+                    </div>
+
+                    <div class="cropper-controls mt-3">
+                        <span class="aspect-label">Ratio:</span>
+                        <div id="cropRatioGroup" class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" onclick="setAspectRatio(1, this)" title="1:1 Square">1:1</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="setAspectRatio(3/4, this)" title="3:4 Portrait">3:4</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="setAspectRatio(NaN, this)" title="Free">Free</button>
+                        </div>
+
+                        <div class="ml-auto d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-icon btn-sm" onclick="cropperInstance.rotate(-90)" title="Rotate Left">&#8634;</button>
+                            <button type="button" class="btn btn-outline-secondary btn-icon btn-sm" onclick="cropperInstance.rotate(90)" title="Rotate Right">&#8635;</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="flipHorizontal()" title="Flip Horizontal">&#8596;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cancelCrop()">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="applyCrop()">&#10003; Apply Crop</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -201,24 +274,106 @@
         </div>
     </div>
 
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
     <script>
-        function previewImage(event) {
+        // ─── Crop modal state ──────────────────────────────────────────────────────
+        let cropperInstance = null;
+        let flipScaleX = 1;
+
+        function openCropModal(event) {
             const file = event.target.files[0];
+            if (!file) return;
+
             const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const imagePreview = document.getElementById('imagePreview');
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-            }
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+            reader.onload = function (e) {
+                loadImageIntoCropper(e.target.result);
+            };
+            reader.readAsDataURL(file);
         }
-    </script>
 
-    <script>
+        function loadImageIntoCropper(dataURL) {
+            const cropImg = document.getElementById('cropperImage');
+
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+
+            flipScaleX = 1;
+
+            document.querySelectorAll('#cropRatioGroup .btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#cropRatioGroup .btn').classList.add('active');
+
+            cropImg.src = dataURL;
+
+            $('#cropModal').modal('show');
+
+            $('#cropModal').one('shown.bs.modal', function () {
+                cropperInstance = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    movable: true,
+                    zoomable: true,
+                    rotatable: true,
+                    scalable: true,
+                    responsive: true,
+                    background: true,
+                });
+            });
+        }
+
+        function setAspectRatio(ratio, btn) {
+            if (cropperInstance) cropperInstance.setAspectRatio(ratio);
+            document.querySelectorAll('#cropRatioGroup .btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function flipHorizontal() {
+            if (!cropperInstance) return;
+            flipScaleX = flipScaleX === 1 ? -1 : 1;
+            cropperInstance.scaleX(flipScaleX);
+        }
+
+        function applyCrop() {
+            if (!cropperInstance) return;
+
+            const canvas = cropperInstance.getCroppedCanvas({
+                width: 400,
+                height: 400,
+                imageSmoothingQuality: 'high',
+            });
+
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.src = canvas.toDataURL('image/jpeg', 0.92);
+            imagePreview.style.display = 'block';
+
+            canvas.toBlob(function (blob) {
+                const croppedFile = new File([blob], 'profile_cropped.jpg', { type: 'image/jpeg' });
+
+                const fileInput = document.getElementById('image');
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                fileInput.files = dataTransfer.files;
+
+                cropperInstance.destroy();
+                cropperInstance = null;
+                $('#cropModal').modal('hide');
+            }, 'image/jpeg', 0.92);
+        }
+
+        function cancelCrop() {
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+            document.getElementById('image').value = '';
+            $('#cropModal').modal('hide');
+        }
+
+        // ─── Camera ───────────────────────────────────────────────────────────────
         let videoStream;
 
         function openCamera() {
@@ -243,37 +398,14 @@
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Convert canvas to data URL (Base64)
             const imageDataURL = canvas.toDataURL('image/png');
 
-            // Display the captured image
-            const imagePreview = document.getElementById('imagePreview');
-            imagePreview.src = imageDataURL;
-            imagePreview.style.display = 'block';
-
-            // Convert the image to a file and set it in the file input
-            dataURLtoFile(imageDataURL, "captured_photo.png");
-
-            // Stop the camera and close the modal
             videoStream.getTracks().forEach(track => track.stop());
             $('#cameraModal').modal('hide');
-        }
 
-        function dataURLtoFile(dataURL, filename) {
-            let arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-
-            let file = new File([u8arr], filename, { type: mime });
-
-            // Create a DataTransfer object to simulate file upload
-            let fileInput = document.getElementById('image');
-            let dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
+            $('#cameraModal').one('hidden.bs.modal', function () {
+                loadImageIntoCropper(imageDataURL);
+            });
         }
     </script>
 
