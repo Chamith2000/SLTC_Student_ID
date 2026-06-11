@@ -10,6 +10,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +33,49 @@ public class StudentController {
     private final BatchService batchService;
 
     @GetMapping("/student-list")
-    public String studentHome(Model model) {
-        studentService.getAllStudent(model);
+    public String studentHome(Model model,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              @RequestParam(required = false) String search,
+                              @RequestParam(required = false) Long courseId,
+                              @RequestParam(required = false) Long batchId,
+                              @RequestParam(required = false) String cardStatus,
+                              @RequestParam(required = false) String confirmationStatus) {
+        studentService.getAllStudent(model, page, size, search, courseId, batchId, cardStatus, confirmationStatus);
+        courseService.getAllCourses(model);
+        batchService.getAllBatches(model);
+        model.addAttribute("selectedSearch", search);
+        model.addAttribute("selectedCourseId", courseId);
+        model.addAttribute("selectedBatchId", batchId);
+        model.addAttribute("selectedCardStatus", cardStatus);
+        model.addAttribute("selectedConfirmationStatus", confirmationStatus);
         return "student/list";
+    }
+
+    @GetMapping("/recently-added")
+    public String recentlyAddedStudents(Model model) {
+        studentService.getRecentlyAddedStudents(model);
+        return "student/recently-added";
+    }
+
+    @PostMapping("/request-reprint/{id}")
+    public String requestReprint(@PathVariable Long id,
+                                 @RequestParam String requestReason,
+                                 RedirectAttributes redirectAttributes) {
+        String result = studentService.requestReprint(id, requestReason);
+        if ("SUCCESS".equals(result)) {
+            redirectAttributes.addFlashAttribute("success", "Reprint request submitted. Student added to Pending Print list.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to submit reprint request.");
+        }
+        return "redirect:/student/student-list";
+    }
+
+    @PostMapping("/submit-for-confirmation")
+    public String submitForConfirmation(@RequestParam List<Long> studentIds, RedirectAttributes redirectAttributes) {
+        studentService.makeAvailableForConfirmation(studentIds);
+        redirectAttributes.addFlashAttribute("success", studentIds.size() + " student(s) moved to Confirmation Pending.");
+        return "redirect:/student/recently-added";
     }
 
     @GetMapping("/student-add")
@@ -118,13 +160,16 @@ public class StudentController {
     }
 
     @PostMapping("/upload-student-excel")
-    public String uploadStudentExcel(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    public String uploadStudentExcel(@RequestParam("file") MultipartFile file,
+                                     @RequestParam("issuedDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date issuedDate,
+                                     @RequestParam("expiryDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date expiryDate,
+                                     RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Please select an Excel file to upload.");
             return "redirect:/student/student-list";
         }
 
-        String result = studentService.registerStudentsBatch(file);
+        String result = studentService.registerStudentsBatch(file, issuedDate, expiryDate);
         if ("SUCCESS".equals(result)) {
             redirectAttributes.addFlashAttribute("success", "Students registered successfully!");
         } else {

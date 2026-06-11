@@ -52,7 +52,9 @@
                                 <td th:text="${student.regNo}"></td>
                                 <td th:text="${student.phoneNumber}"></td>
                                 <td>
-                                    <button class="btn btn-sm btn-warning"
+                                    <!-- Print Button: only for cards not yet issued -->
+                                    <button th:if="${student.cardStatus != null and student.cardStatus.name() != 'ISSUED'}"
+                                            class="btn btn-sm btn-warning"
                                             th:data-id="${student.id}"
                                             onclick="printIdCard(this)">
                                         Print ID Card

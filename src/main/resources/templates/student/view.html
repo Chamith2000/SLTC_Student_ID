@@ -96,7 +96,7 @@
                 <div class="col-sm-10" style="margin-top: 5px;">
                     <span id="confirmed"
                           style="font-weight: bold; font-size: 0.9em; text-align: left; display: block; color: #0c85d0"
-                          th:text="${student.confirmationStatus == T(com.oexil.studentreg.enums.ConfirmationStatus).UNCONFIRMED ? 'Not yet confirmed' : (student.confirmed ? 'Confirmed (' + #dates.format(student.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')' : 'Confirmation Rejected (' + #dates.format(student.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')')}"></span>
+                          th:text="${student.confirmationStatus == T(com.oexil.studentreg.enums.ConfirmationStatus).UNCONFIRMED ? 'Corrections Requested' : (student.confirmed ? 'Confirmed (' + #dates.format(student.confirmedActionTime, 'dd/MM/yyyy HH:mm:ss') + ')' : 'Awaiting Confirmation')}"></span>
                 </div>
             </div>
 

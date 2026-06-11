@@ -2,6 +2,7 @@ com/oexil/studentreg/service/PdfGeneratorService.class
 com/oexil/studentreg/security/WebSecurityConfig.class
 com/oexil/studentreg/service/StudentService.class
 com/oexil/studentreg/enums/ConfirmationStatus.class
+com/oexil/studentreg/enums/CardType.class
 com/oexil/studentreg/controller/DashboardController.class
 com/oexil/studentreg/model/Student.class
 com/oexil/studentreg/service/CourseService.class
@@ -29,6 +30,7 @@ com/oexil/studentreg/utils/Utils.class
 com/oexil/studentreg/utils/QRCodeUtil.class
 com/oexil/studentreg/enums/Status.class
 com/oexil/studentreg/controller/StudentDetailsCorrectionController.class
+com/oexil/studentreg/repository/StudentIdCardRepository.class
 com/oexil/studentreg/controller/BatchController.class
 com/oexil/studentreg/controller/ConfirmationController.class
 com/oexil/studentreg/service/impl/StudentServiceImpl.class
@@ -39,6 +41,7 @@ com/oexil/studentreg/service/impl/CurrentUserImpl.class
 com/oexil/studentreg/service/ImageUploadService.class
 com/oexil/studentreg/controller/CourseController.class
 com/oexil/studentreg/service/CurrentUser.class
+com/oexil/studentreg/enums/ReprintReason.class
 com/oexil/studentreg/dto/user/UserForResponsePrivet.class
 com/oexil/studentreg/model/course/Batch.class
 com/oexil/studentreg/service/PasswordGen.class
@@ -49,8 +52,10 @@ com/oexil/studentreg/service/impl/BatchServiceImpl.class
 com/oexil/studentreg/utils/FileUtilizer.class
 com/oexil/studentreg/controller/AuthController.class
 com/oexil/studentreg/repository/RoleRepository.class
+com/oexil/studentreg/model/StudentConfirmation.class
 com/oexil/studentreg/controller/RootController.class
 com/oexil/studentreg/config/ModelMapperConfig.class
+com/oexil/studentreg/enums/CardStatus.class
 com/oexil/studentreg/repository/BatchRepository.class
 com/oexil/studentreg/repository/UserRepository.class
 com/oexil/studentreg/service/impl/CourseServiceImpl.class
@@ -60,6 +65,8 @@ com/oexil/studentreg/controller/PrintController.class
 com/oexil/studentreg/service/impl/BatchServiceImpl$1.class
 com/oexil/studentreg/constants/Constants.class
 com/oexil/studentreg/service/BatchService.class
+com/oexil/studentreg/model/StudentIdCard.class
 com/oexil/studentreg/service/impl/PdfGeneratorServiceImpl.class
 com/oexil/studentreg/service/impl/AuthServiceImpl.class
 com/oexil/studentreg/repository/CourseRepository.class
+com/oexil/studentreg/repository/StudentConfirmationRepository.class

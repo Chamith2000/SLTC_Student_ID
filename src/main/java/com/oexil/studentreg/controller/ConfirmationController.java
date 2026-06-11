@@ -1,14 +1,10 @@
 package com.oexil.studentreg.controller;
 
-import com.oexil.studentreg.dto.student.StudentDTO;
-import com.oexil.studentreg.enums.ConfirmationStatus;
 import com.oexil.studentreg.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @Controller
@@ -32,11 +28,17 @@ public class ConfirmationController {
         return "student/confirmation/pending-list";
     }
 
-    @GetMapping("/print-pending-ids")
-    public String printPendingIds(Model model,
-                                  @RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "1000") int size) {
-        studentService.getAllPendingToPrintUnconfirmed(model, page, size);
-        return "student/id/id-card";
+    @GetMapping("/correction-list")
+    public String correctionList(Model model) {
+        studentService.getAllCorrectionStudents(model);
+        return "student/confirmation/correction-list";
     }
+
+//    @GetMapping("/print-pending-ids")
+//    public String printPendingIds(Model model,
+//                                  @RequestParam(defaultValue = "0") int page,
+//                                  @RequestParam(defaultValue = "1000") int size) {
+//        studentService.getAllPendingToPrintUnconfirmed(model, page, size);
+//        return "student/id/id-card";
+//    }
 }

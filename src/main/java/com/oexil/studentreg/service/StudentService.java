@@ -1,23 +1,25 @@
 package com.oexil.studentreg.service;
 
 import com.oexil.studentreg.dto.student.StudentDTO;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 
 @Service
 public interface StudentService {
 
-    List<StudentDTO> getAllStudent(Model model);
+    void getAllStudent(Model model, int page, int size,
+                      String search, Long courseId, Long batchId,
+                      String cardStatus, String confirmationStatus);
 
     String registerStudent(@Valid StudentDTO studentDTO);
 
-    String registerStudentsBatch(MultipartFile file);
+    String registerStudentsBatch(MultipartFile file, Date issuedDate, Date expiryDate);
 
     StudentDTO getStudentById(Long id);
 
@@ -41,7 +43,15 @@ public interface StudentService {
 
     void getAllPendingToPrint(Model model, int page, int size);
 
-    void getAllPendingToPrintUnconfirmed(Model model, int page, int size);
+    List<StudentDTO> getRecentlyAddedStudents(Model model);
 
-//    void generateAllIdsPdf(HttpServletResponse response, int page, int size) throws Exception;
+    void makeAvailableForConfirmation(List<Long> studentIds);
+
+    void markAsPrinted(List<Long> studentIds, String printLabel);
+
+    String requestReprint(Long studentId, String requestReason);
+
+    void getAllCorrectionStudents(Model model);
+
+//    public void getAllPendingToPrintUnconfirmed(Model model, int page, int size);
 }

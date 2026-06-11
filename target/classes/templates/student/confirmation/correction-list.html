@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Correction Requested List</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="row mb-4">
+        <div class="col-6">
+            <h2>Correction Requested List</h2>
+            <p class="text-muted">Students who requested corrections in their profiles.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Students with Corrections</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student Name</th>
+                                <th>Reg Number</th>
+                                <th>Requested Corrections</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="student, iterStat : ${students}">
+                                <td th:text="${iterStat.index + 1}"></td>
+                                <td th:text="${student.fullName}"></td>
+                                <td th:text="${student.regNo}"></td>
+                                <td th:text="${student.corrections}" style="color: #e74a3b; font-weight: bold;"></td>
+                                <td>
+                                    <a th:href="@{/student/edit/{id}(id=${student.id})}" class="btn btn-sm btn-danger">
+                                        Edit / Resolve
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(students)}">
+                                <td colspan="5" class="text-center">No corrections pending.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

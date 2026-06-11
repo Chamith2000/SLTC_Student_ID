@@ -63,21 +63,42 @@
                     </a>
                 </li>
 
+                <!-- Students Menu -->
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/student/student-add}">
-                        <i class="menu-icon mdi mdi-account-plus"></i>
-                        <span class="menu-title">Register</span>
+                    <a class="nav-link" data-toggle="collapse" href="#students-menu" aria-expanded="false" aria-controls="students-menu">
+                        <i class="menu-icon mdi mdi-account-multiple"></i>
+                        <span class="menu-title">Students</span>
+                        <i class="menu-arrow"></i>
                     </a>
+                    <div class="collapse" id="students-menu">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/student/student-add}">
+                                    <i class="menu-icon mdi mdi-account-plus"></i>Register
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/student/recently-added}">
+                                    <i class="menu-icon mdi mdi-account-check"></i>Recently Added
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/student/student-list}">
+                                    <i class="menu-icon mdi mdi-format-list-bulleted"></i>All Students
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
 
                 <!-- Admin Menu -->
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" data-toggle="collapse" href="#admin-location" aria-expanded="false" aria-controls="admin-location">
+                    <a class="nav-link" data-toggle="collapse" href="#faculty-menu" aria-expanded="false" aria-controls="faculty-menu">
                         <i class="menu-icon mdi mdi-book-multiple"></i>
                         <span class="menu-title">Faculty</span>
                         <i class="menu-arrow"></i>
                     </a>
-                    <div class="collapse" id="admin-location">
+                    <div class="collapse" id="faculty-menu">
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item">
                                 <a class="nav-link" th:href="@{/course/course-list}"><i class="menu-icon mdi mdi-book-multiple"></i>Faculty</a>
@@ -98,14 +119,19 @@
                     </a>
                     <div class="collapse" id="confirmation-menu">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item">
-                                <a class="nav-link" th:href="@{/confirmation/confirmed-list}">
-                                    <i class="menu-icon mdi mdi-check"></i>Confirmed List
-                                </a>
-                            </li>
+<!--                            <li class="nav-item">-->
+<!--                                <a class="nav-link" th:href="@{/confirmation/confirmed-list}">-->
+<!--                                    <i class="menu-icon mdi mdi-check"></i>Confirmed List-->
+<!--                                </a>-->
+<!--                            </li>-->
                             <li class="nav-item">
                                 <a class="nav-link" th:href="@{/confirmation/pending-list}">
                                     <i class="menu-icon mdi mdi-playlist-plus"></i>Pending List
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/confirmation/correction-list}">
+                                    <i class="menu-icon mdi mdi-alert-circle-outline"></i>Correction List
                                 </a>
                             </li>
                         </ul>
@@ -162,7 +188,7 @@
 
 <!-- plugins:js -->
 <script th:src="@{/vendors/js/vendor.bundle.base.js}"></script>
-<!--<script th:src="@{/vendors/js/vendor.bundle.addons.js}"></script>-->
+<script th:src="@{/vendors/js/vendor.bundle.addons.js}"></script>
 <script th:src="@{/js/off-canvas.js}"></script>
 <script th:src="@{/js/misc.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>

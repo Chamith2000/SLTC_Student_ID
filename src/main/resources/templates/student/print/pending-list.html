@@ -2,7 +2,7 @@
 <html layout:decorate="~{layout}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>Student List</title>
+    <title>Pending Print List</title>
 </head>
 <body>
 <section layout:fragment="content">
@@ -20,11 +20,11 @@
     <!-- Top Bar -->
     <div class="row mb-4">
         <div class="col-6">
-            <h2>List of student to print</h2>
-            <p class="text-muted">List of student to print</p>
+            <h2>Pending Print List</h2>
+            <p class="text-muted">Generate PDF cards, then mark them as printed.</p>
         </div>
         <div class="col-6 text-right">
-            <button class="btn btn-success" onclick="printCurrentPage()">Print All</button>
+            <button class="btn btn-info" onclick="printCurrentPage()">Generate PDF (All on Page)</button>
         </div>
     </div>
 
@@ -33,55 +33,78 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">Student List</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Student Name</th>
-                                <th>Reg Number</th>
-                                <th>Phone Number</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="student, iterStat : ${students.content}">
-                                <td th:text="${iterStat.index + 1 + (students.number * students.size)}"></td>
-                                <td th:text="${student.fullName}"></td>
-                                <td th:text="${student.regNo}"></td>
-                                <td th:text="${student.phoneNumber}"></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info"
-                                            th:data-id="${student.id}"
-                                            onclick="printIdCard(this)">
-                                        Print ID Card
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(students.content)}">
-                                <td colspan="5" class="text-center">No students found</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+
+                    <form id="markPrintedForm" th:action="@{/print/mark-as-printed}" method="post">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title mb-0">Students Awaiting Print</h4>
+                            <div class="d-flex align-items-center">
+                                <div class="mr-2">
+                                    <input type="text" id="printLabel" name="printLabel"
+                                           class="form-control"
+                                           placeholder="Print Batch Label (e.g. BATCH-2025-01)"
+                                           style="width: 280px;"
+                                           maxlength="100"/>
+                                </div>
+                                <button type="button" class="btn btn-success" onclick="submitMarkPrinted()">
+                                    <i class="mdi mdi-printer-check"></i> Mark as Printed
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" title="Select All"/></th>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Reg Number</th>
+                                    <th>Phone Number</th>
+                                    <th>Generate PDF</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="student, iterStat : ${students.content}">
+                                    <td>
+                                        <input type="checkbox" name="studentIds"
+                                               th:value="${student.id}"
+                                               class="student-checkbox"/>
+                                    </td>
+                                    <td th:text="${iterStat.index + 1 + (students.number * students.size)}"></td>
+                                    <td th:text="${student.fullName}"></td>
+                                    <td th:text="${student.regNo}"></td>
+                                    <td th:text="${student.phoneNumber}"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-info"
+                                                th:data-id="${student.id}"
+                                                onclick="printIdCard(this)">
+                                            Generate PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(students.content)}">
+                                    <td colspan="6" class="text-center">No students found</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </form>
 
                     <!-- Pagination Controls -->
                     <div th:if="${students.totalPages > 1}" class="mt-4">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
-                                <!-- Previous Button -->
                                 <li class="page-item" th:classappend="${students.first} ? 'disabled'">
                                     <a class="page-link" th:href="@{/print/pending-print-list(page=${students.number - 1}, size=${students.size})}" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                <!-- Page Numbers -->
                                 <li th:each="page : ${#numbers.sequence(0, students.totalPages - 1)}"
                                     class="page-item" th:classappend="${page == students.number} ? 'active'">
                                     <a class="page-link" th:href="@{/print/pending-print-list(page=${page}, size=${students.size})}" th:text="${page + 1}"></a>
                                 </li>
-                                <!-- Next Button -->
                                 <li class="page-item" th:classappend="${students.last} ? 'disabled'">
                                     <a class="page-link" th:href="@{/print/pending-print-list(page=${students.number + 1}, size=${students.size})}" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
@@ -89,12 +112,11 @@
                                 </li>
                             </ul>
                         </nav>
-                        <!-- Page Size Selector -->
                         <div class="text-center mt-2">
                             <form th:action="@{/print/pending-print-list}" method="get">
                                 <label for="size">Items per page:</label>
                                 <select id="size" name="size" onchange="this.form.submit()">
-                                    <option value="5" th:selected="${students.size == 5}">5</option>
+                                    <option value="5"  th:selected="${students.size == 5}">5</option>
                                     <option value="10" th:selected="${students.size == 10}">10</option>
                                     <option value="20" th:selected="${students.size == 20}">20</option>
                                     <option value="50" th:selected="${students.size == 50}">50</option>
@@ -102,20 +124,56 @@
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden iframe for ID Card -->
+    <!-- Hidden iframe for PDF generation -->
     <iframe id="printFrame" style="display:none;"></iframe>
 
     <script>
+        const selectAllCheckbox = document.getElementById('selectAll');
+
+        selectAllCheckbox.addEventListener('change', function () {
+            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = this.checked);
+        });
+
+        document.querySelectorAll('.student-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const all     = document.querySelectorAll('.student-checkbox');
+                const checked = document.querySelectorAll('.student-checkbox:checked');
+                selectAllCheckbox.checked       = all.length === checked.length;
+                selectAllCheckbox.indeterminate  = checked.length > 0 && checked.length < all.length;
+            });
+        });
+
+        function submitMarkPrinted() {
+            const checked    = document.querySelectorAll('.student-checkbox:checked');
+            const labelInput = document.getElementById('printLabel');
+            const label      = labelInput.value.trim();
+
+            if (checked.length === 0) {
+                alert('Please select at least one student.');
+                return;
+            }
+            if (!label) {
+                alert('Please enter a Print Batch Label before marking as Printed.');
+                labelInput.focus();
+                return;
+            }
+            if (confirm('Mark ' + checked.length + ' student card(s) as Printed under batch "' + label + '"?')) {
+                labelInput.value = label;
+                document.getElementById('markPrintedForm').submit();
+            }
+        }
+
         function printIdCard(button) {
-            let studentId = button.getAttribute("data-id");
-            let iframe = document.getElementById("printFrame");
-            iframe.src = "/student/generate-id/" + studentId;
-            iframe.onload = function() {
+            let studentId = button.getAttribute('data-id');
+            let iframe = document.getElementById('printFrame');
+            iframe.src = '/student/generate-id/' + studentId;
+            iframe.onload = function () {
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print();
             };
@@ -124,9 +182,10 @@
         function printCurrentPage() {
             const page = [[${students.number}]];
             const size = [[${students.size}]];
-            window.open(`/student/generate-all-ids?page=${page}&size=${size}`, "_blank");
+            window.open(`/student/generate-all-ids?page=${page}&size=${size}`, '_blank');
         }
     </script>
+
 </section>
 </body>
 </html>

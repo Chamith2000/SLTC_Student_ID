@@ -1,7 +1,10 @@
 package com.oexil.studentreg.dto.student;
 
 import com.oexil.studentreg.constants.Constants;
+import com.oexil.studentreg.enums.CardStatus;
+import com.oexil.studentreg.enums.CardType;
 import com.oexil.studentreg.enums.ConfirmationStatus;
+import com.oexil.studentreg.enums.ReprintReason;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -73,9 +76,18 @@ public class StudentDTO {
     private Boolean confirmed;
     private ConfirmationStatus confirmationStatus;
     private Date confirmedActionTime;
+    private Date confirmationStatusChangeTime;
     private String corrections;
 
+    // ID card fields
+    private Long cardId;
+    private CardStatus cardStatus;
     private String printLabel;
+    private Date pdfGeneratedAt;
+    private Date printedAt;
+    private Date issuedAt;
+    private CardType cardType;
+    private ReprintReason reprintReason;
 
     public void setFilePath(String filePath) {
         this.filePath = (filePath != null) ? Constants.IMAGE_URL + filePath : null;  // or provide a default path
